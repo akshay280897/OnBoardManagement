@@ -11,7 +11,7 @@ namespace OnBoardManagement.Models
     {
         public OnBoardDb():base("DefaultConnection")
         {
-
+            Database.SetInitializer<OnBoardDb>(new CreateDatabaseIfNotExists<OnBoardDb>());
         }
 
         public DbSet<Mentor> Mentors { get; set; }
