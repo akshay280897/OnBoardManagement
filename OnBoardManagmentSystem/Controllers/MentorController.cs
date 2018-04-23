@@ -1,0 +1,117 @@
+﻿﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using OnBoardManagement.Models;
+
+namespace OnBoardManagmentSystem.Controllers
+{
+    public class MentorController : Controller
+    {
+        private OnBoardDb db = new OnBoardDb();
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+
+        public JsonResult RemoteDataSource_GetProducts(string text)
+        {
+
+            var products = db.Mentors.Select(product => new Mentor
+            {
+                M_Id=product.M_Id,
+                M_Name=product.M_Name
+               
+            });
+
+
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                products = products.Where(p => p.M_Name.Contains(text));
+            }
+
+            return Json(db.Mentors.ToList(), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult Mentors_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            IQueryable<Mentor> mentors = db.Mentors;
+            DataSourceResult result = mentors.ToDataSourceResult(request, mentor => new {
+                M_Id = mentor.M_Id,
+                M_Name = mentor.M_Name
+            });
+
+            return Json(result);
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Mentors_Create([DataSourceRequest]DataSourceRequest request, Mentor mentor)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new Mentor
+                {
+                    M_Name = mentor.M_Name
+                };
+
+                db.Mentors.Add(entity);
+                db.SaveChanges();
+                mentor.M_Id = entity.M_Id;
+            }
+
+            return Json(new[] { mentor }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Mentors_Update([DataSourceRequest]DataSourceRequest request, Mentor mentor)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new Mentor
+                {
+                    M_Id = mentor.M_Id,
+                    M_Name = mentor.M_Name
+                };
+
+                db.Mentors.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return Json(new[] { mentor }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Mentors_Destroy([DataSourceRequest]DataSourceRequest request, Mentor mentor)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new Mentor
+                {
+                    M_Id = mentor.M_Id,
+                    M_Name = mentor.M_Name
+                };
+
+                db.Mentors.Attach(entity);
+                db.Mentors.Remove(entity);
+                db.SaveChanges();
+            }
+
+            return Json(new[] { mentor }.ToDataSourceResult(request, ModelState));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

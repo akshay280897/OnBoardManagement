@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<OnBoardManagement.Models.OnBoarder>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.O_Name);
+        columns.Bound(c => c.O_RotationNo);
+        columns.Bound(c => c.ReportingManager);
+        columns.Bound(c => c.M_Id);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Navigatable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.O_Id))
+          .Read(read => read.Action("OnBoarders_Read", "Onboarder"))
+          .Create(create => create.Action("OnBoarders_Create", "Onboarder"))
+          .Update(update => update.Action("OnBoarders_Update", "Onboarder"))
+          .Destroy(destroy => destroy.Action("OnBoarders_Destroy", "Onboarder"))
+      )
+)

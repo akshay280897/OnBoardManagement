@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "mentor";
+}
+
+@(Html.Kendo().DropDownList()
+          .Name("products")
+          .DataTextField("M_Name")
+          .DataValueField("M_Id")
+          .DataSource(source =>
+          {
+              source.Read(read =>
+              {
+                  read.Action("RemoteDataSource_GetProducts", "Mentor");
+              });
+          })
+          .HtmlAttributes(new { style = "width: 100%" })
+)
+
